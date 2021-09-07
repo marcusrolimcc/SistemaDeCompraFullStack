@@ -1,7 +1,10 @@
 package com.br.marcusrolim.cursojavafullstack.domain;
 
+import javax.persistence.Entity;
+
 import com.br.marcusrolim.cursojavafullstack.domain.enums.EstadoPagamento;
 
+@Entity
 public class PagamentoComCartao extends Pagamento{
 	private static final long serialVersionUID = 1L;
 	

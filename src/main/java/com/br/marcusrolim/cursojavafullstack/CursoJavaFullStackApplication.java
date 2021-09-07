@@ -1,5 +1,6 @@
 package com.br.marcusrolim.cursojavafullstack;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +13,20 @@ import com.br.marcusrolim.cursojavafullstack.domain.Cidade;
 import com.br.marcusrolim.cursojavafullstack.domain.Cliente;
 import com.br.marcusrolim.cursojavafullstack.domain.Endereco;
 import com.br.marcusrolim.cursojavafullstack.domain.Estado;
+import com.br.marcusrolim.cursojavafullstack.domain.Pagamento;
+import com.br.marcusrolim.cursojavafullstack.domain.PagamentoComBoleto;
+import com.br.marcusrolim.cursojavafullstack.domain.PagamentoComCartao;
+import com.br.marcusrolim.cursojavafullstack.domain.Pedido;
 import com.br.marcusrolim.cursojavafullstack.domain.Produto;
+import com.br.marcusrolim.cursojavafullstack.domain.enums.EstadoPagamento;
 import com.br.marcusrolim.cursojavafullstack.domain.enums.TipoCliente;
 import com.br.marcusrolim.cursojavafullstack.repositories.CategoriaRepository;
 import com.br.marcusrolim.cursojavafullstack.repositories.CidadeRepository;
 import com.br.marcusrolim.cursojavafullstack.repositories.ClienteRepository;
 import com.br.marcusrolim.cursojavafullstack.repositories.EnderecoRepository;
 import com.br.marcusrolim.cursojavafullstack.repositories.EstadoRepository;
+import com.br.marcusrolim.cursojavafullstack.repositories.PagamentoRepository;
+import com.br.marcusrolim.cursojavafullstack.repositories.PedidoRepository;
 import com.br.marcusrolim.cursojavafullstack.repositories.ProdutoRepository;
 
 @SpringBootApplication
@@ -41,6 +49,12 @@ public class CursoJavaFullStackApplication implements CommandLineRunner {
 	
 	@Autowired
 	private EnderecoRepository enderecoRepository;
+	
+	@Autowired
+	private PedidoRepository pedidoRepository;
+	
+	@Autowired
+	private PagamentoRepository pagamentoRepository;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(CursoJavaFullStackApplication.class, args);
@@ -89,5 +103,20 @@ public class CursoJavaFullStackApplication implements CommandLineRunner {
 		
 		clienteRepository.saveAll(Arrays.asList(cli1));
 		enderecoRepository.saveAll(Arrays.asList(e1, e2));
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		
+		Pedido ped1 = new Pedido(null, sdf.parse("30/09/2017 10:32"), cli1, e1);
+		Pedido ped2 = new Pedido(null, sdf.parse("10/10/2017 19:35"), cli1, e2);
+		
+		Pagamento pagto1 = new PagamentoComCartao(null, EstadoPagamento.QUITADO, ped1, 6);
+		ped1.setPagamento(pagto1);
+		Pagamento pagto2 = new PagamentoComBoleto(null, EstadoPagamento.PENDENTE, ped2, sdf.parse("20/10/2017 00:00"), null);
+		ped2.setPagamento(pagto2);
+		
+		cli1.getPedidos().addAll(Arrays.asList(ped1, ped2));
+		
+		pedidoRepository.saveAll(Arrays.asList(ped1, ped2));
+		pagamentoRepository.saveAll(Arrays.asList(pagto1, pagto2));
 		}
 }
